@@ -73,7 +73,7 @@ export const App = () => {
         <section>
             <span>Wallet Balance <strong>${amount}</strong></span>
             <div className='dice'>
-                {diceValues.map((el, index) => <Dice key={index} index={index} item={el} disable={disabled} handleClick={() => handleClick(el, index)} />)}
+                {diceValues.map((el, index) => <Dice key={index} index={index} item={el} disable={disabled || play} handleClick={() => handleClick(el, index)} />)}
             </div>
             <button className='playButton' onClick={handlePlay} disabled={!isOneItemSelected || play}>Play</button>
             <div className='colorCode'>
