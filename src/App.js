@@ -3,11 +3,13 @@ import { DiceContext } from './DiceContext/DiceContext'
 import { useTimeout } from './hooks/useTimeout.hook';
 import { Dice } from './Dice/Dice';
 import { Action_Types } from './DiceContext/DiceReducer/diceReducer';
+import { useInterval } from './hooks/useInterval.hook';
 
 export const App = () => {
     const { state, dispatch } = React.useContext(DiceContext);
     const { amount, diceValues, disabled, messgae, winner } = state;
     const [play, setPlay] = React.useState(false);
+    const [timer, setTimer] = React.useState(10)
 
     const handleClick = (item, index) => {
         const { value } = item;
@@ -55,6 +57,7 @@ export const App = () => {
         dispatch({ type: Action_Types.SET_MESSAGE, payload: '' })
         dispatch({ type: Action_Types.SET_DISABLED, payload: false })
         setPlay(false);
+        setTimer(10)
     }
 
     useTimeout(() => {
@@ -69,9 +72,16 @@ export const App = () => {
         handleReset()
     }, winner > -1 ? 5000 : 0);
 
+    useInterval(() => {
+        setTimer(timer - 1)
+    }, play && !messgae ? 1000 : 0);
+
+    const hasMessage = messgae ? 'Please Wait' : 'Please Play the game'
+
     return (
         <section>
             <span>Wallet Balance <strong>${amount}</strong></span>
+            {play && !messgae ? <span className='timerClass'>Please wait <strong>{timer}</strong> seconds</span> : <span className='timerClass'>{hasMessage}</span>}
             <div className='dice'>
                 {diceValues.map((el, index) => <Dice key={index} index={index} item={el} disable={disabled || play} handleClick={() => handleClick(el, index)} />)}
             </div>
