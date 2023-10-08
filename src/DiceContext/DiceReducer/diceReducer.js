@@ -1,15 +1,14 @@
 export const initialState = {
     amount: 100,
-    diceValues: [{ name: 'Dice 1', bet: 'Bet $1', value: 1, isSelected: false },
-    { name: 'Dice 2', bet: 'Bet $1', value: 1, isSelected: false },
-    { name: 'Dice 3', bet: 'Bet $1', value: 1, isSelected: false },
-    { name: 'Dice 4', bet: 'Bet $1', value: 1, isSelected: false },
-    { name: 'Dice 5', bet: 'Bet $1', value: 1, isSelected: false },
-    { name: 'Dice 6', bet: 'Bet $1', value: 1, isSelected: false }],
+    diceValues: [{ name: 'Dice 1', bet: 'Bet', value: 0, isSelected: false },
+    { name: 'Dice 2', bet: 'Bet', value: 0, isSelected: false },
+    { name: 'Dice 3', bet: 'Bet', value: 0, isSelected: false },
+    { name: 'Dice 4', bet: 'Bet', value: 0, isSelected: false },
+    { name: 'Dice 5', bet: 'Bet1', value: 0, isSelected: false },
+    { name: 'Dice 6', bet: 'Bet', value: 0, isSelected: false }],
     disabled: false,
     winner: -1,
     messgae: '',
-    betAmount: 1,
 }
 
 export const Action_Types = {

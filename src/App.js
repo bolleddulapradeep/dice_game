@@ -6,14 +6,15 @@ import { Action_Types } from './DiceContext/DiceReducer/diceReducer';
 
 export const App = () => {
     const { state, dispatch } = React.useContext(DiceContext);
-    const { amount, diceValues, disabled, messgae, betAmount, winner } = state;
+    const { amount, diceValues, disabled, messgae, winner } = state;
+    const [play, setPlay] = React.useState(false);
 
     const handleClick = (item, index) => {
-        const { isSelected, value } = item;
-        const element = { ...item, isSelected: item.isSelected ? false : true }
+        const { value } = item;
+        const element = { ...item, isSelected: item.isSelected && value === 0 ? false : true, value: amount > 0 ? value + 1 : value }
         const replaceElement = [...diceValues]
         replaceElement.splice(index, 1, element)
-        dispatch({ type: Action_Types.CHANGE_AMOUNT, payload: isSelected ? value : -value });
+        dispatch({ type: Action_Types.CHANGE_AMOUNT, payload: element.value > 0 && amount > 0 ? -1 : 0 });
         dispatch({
             type: Action_Types.CHANGE_DICE_VALUES, payload: replaceElement
         })
@@ -28,6 +29,8 @@ export const App = () => {
         dispatch({ type: Action_Types.SET_MESSAGE, payload: 'Please Wait system is calculating' })
     }
 
+    const handlePlay = () => setPlay(true)
+
     const checkForWinner = () => {
         const fill = Array(diceValues.length).fill(0).map((_, index) => index)
         const randomNumber = Math.floor(Math.random() * fill.length)
@@ -35,9 +38,9 @@ export const App = () => {
         const getItem = diceValues.find((_, index) => winner === index);
         const filteredValues = isValueIncluded.filter((item) => item >= 0);
         const winnerIncluded = filteredValues.includes(winner);
-        const amountInvested = filteredValues.length * betAmount;
         const isWon = winnerIncluded ? 'won' : 'lost'
-        const amountRewarded = winnerIncluded ? (2 * getItem.value) : amountInvested
+        const betAmount = diceValues.reduce((acc, curr) => acc + curr.value, 0)
+        const amountRewarded = winnerIncluded ? (2 * getItem.value) : betAmount
         const messgae = `Dice returned the number ${winner + 1}, you ${isWon} the game and ${isWon} $ ${amountRewarded}`;
         dispatch({ type: Action_Types.SET_WINNER, payload: winner });
         dispatch({ type: Action_Types.CHANGE_AMOUNT, payload: winnerIncluded ? (2 * getItem.value) : 0 })
@@ -46,16 +49,17 @@ export const App = () => {
 
     const handleReset = () => {
         dispatch({
-            type: Action_Types.CHANGE_DICE_VALUES, payload: diceValues.map((el) => ({ ...el, isSelected: false }))
+            type: Action_Types.CHANGE_DICE_VALUES, payload: diceValues.map((el) => ({ ...el, isSelected: false, value: 0 }))
         })
         dispatch({ type: Action_Types.SET_WINNER, payload: -1 })
         dispatch({ type: Action_Types.SET_MESSAGE, payload: '' })
         dispatch({ type: Action_Types.SET_DISABLED, payload: false })
+        setPlay(false);
     }
 
     useTimeout(() => {
         handleDisable()
-    }, isOneItemSelected ? 10000 : 0);
+    }, play ? 10000 : 0);
 
     useTimeout(() => {
         checkForWinner()
@@ -71,6 +75,7 @@ export const App = () => {
             <div className='dice'>
                 {diceValues.map((el, index) => <Dice key={index} index={index} item={el} disable={disabled} handleClick={() => handleClick(el, index)} />)}
             </div>
+            <button className='playButton' onClick={handlePlay} disabled={!isOneItemSelected || play}>Play</button>
             <div className='colorCode'>
                 <div className='boxColor'>
                     <div className='showInfo'>
